@@ -65,4 +65,4 @@ This Python script trains a neural network model (SixDRepNet) for head pose esti
 ## PreTrained Models
 - <a href="https://drive.google.com/drive/folders/16ynMygSYC5ysvucNvzVCgJ81QCjO3wPC?usp=sharing">RepVGG A0-B1 Models</a>
 - <a href="https://drive.google.com/drive/folders/1yFKmrGoyEFrR_T9ZfZJNLPWP0XXHnSCM?usp=drive_link">Custom RepVGG AX-AY-AZ Models</a>
-- <a href="https://drive.google.com/drive/folders/1yFKmrGoyEFrR_T9ZfZJNLPWP0XXHnSCM?usp=drive_link">EfficientNet Lite Models</a>
+- <a href="https://drive.google.com/drive/folders/10PpuLVseP6B65Kq_7O3Otyzf_PcTPVue?usp=sharing">EfficientNet Lite Models</a>
