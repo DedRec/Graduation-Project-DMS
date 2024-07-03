@@ -1,12 +1,24 @@
 #include "headposecomponent.h"
-#include "infer.h"
+#include "inferseq.h"
+#include <boost/filesystem.hpp> // For directory handling with Boost
+#include <boost/date_time/posix_time/posix_time.hpp> // For timestamps
+#include <boost/date_time/gregorian/gregorian.hpp>  // For to_iso_extended_string for dates
+#include <iomanip>  // For std::setw and std::setfill
+
+namespace fs = boost::filesystem;
+namespace pt = boost::posix_time;
+namespace gr = boost::gregorian;
+
 
 
 TRTEngineSingleton* TRTEngineSingleton::instance = nullptr;
 
+
+
+
 //constructor
-HeadPoseComponent::HeadPoseComponent(ThreadSafeQueue<cv::Mat>& inputQueue, ThreadSafeQueue<std::string>& outputQueue,ThreadSafeQueue<cv::Mat>& framesQueue, ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
-: inputQueue(inputQueue), outputQueue(outputQueue),framesQueue(framesQueue) ,commandsQueue(commandsQueue),faultsQueue(faultsQueue), running(false) {}
+HeadPoseComponent::HeadPoseComponent(ThreadSafeQueue<cv::Mat>& inputQueue,ThreadSafeQueue<cv::Rect>& faceRectQueue, ThreadSafeQueue<std::vector<std::vector<float>>>& outputQueue,ThreadSafeQueue<cv::Mat>& framesQueue, ThreadSafeQueue<std::string>& commandsQueue,ThreadSafeQueue<std::string>& faultsQueue)
+: inputQueue(inputQueue), faceRectQueue(faceRectQueue), outputQueue(outputQueue),framesQueue(framesQueue) ,commandsQueue(commandsQueue),faultsQueue(faultsQueue), running(false) {}
 
 
 //destructor
@@ -38,32 +50,29 @@ void HeadPoseComponent::stopHeadPoseDetection() {
 }
 
 
-// This loop takes frame from input queue , sends it to detect faces and places it into the output queue
 void HeadPoseComponent::HeadPoseDetectionLoop() {
     cv::Mat frame;
-    this->lastTime = std::chrono::high_resolution_clock::now(); // Initialize the last time
     bool isFirstFrame = true; // Flag to check if it's the first frame
 
     while (running) {
         if (inputQueue.tryPop(frame)) {
-
-
-
-            auto start = std::chrono::high_resolution_clock::now();
-            detectHeadPose(frame);
-            auto end = std::chrono::high_resolution_clock::now();
-
-            double detectionTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-            //updatePerformanceMetrics(detectionTime);
-            //displayPerformanceMetrics(frame);
-
-
-
-
-
+            cv::Mat croppedFace;
+            // Assuming the face is detected and bounded by a rectangle
+            cv::Rect faceRect = detectFaceRectangle(frame); // Implement this function to find the rectangle
+            if (faceRect.x >= 0 && faceRect.y >= 0 &&
+                faceRect.width > 0 && faceRect.height > 0 &&
+                faceRect.x + faceRect.width <= frame.cols &&
+                faceRect.y + faceRect.height <= frame.rows) {
+                croppedFace = frame(faceRect);
+            } else {
+                croppedFace = frame; // No face detected, use the original frame
+            }
+            
+            auto readings = detectHeadPose(croppedFace);
             framesQueue.push(frame);
+            outputQueue.push(readings);
 
-          if (isFirstFrame) {
+            if (isFirstFrame) {
                 inputQueue.clear(); // Clear the queue after the first frame is processed
                 isFirstFrame = false; // Update the flag so the queue won't be cleared again
             }
@@ -73,58 +82,48 @@ void HeadPoseComponent::HeadPoseDetectionLoop() {
 
 
 
+std::vector<std::vector<float>> HeadPoseComponent::detectHeadPose(cv::Mat& croppedFace) {
+    TRTEngineSingleton* trt = TRTEngineSingleton::getInstance();
 
-
-//function to start the head pose detection
-void HeadPoseComponent::detectHeadPose(cv::Mat& frame) {
-
-    TRTEngineSingleton* trt=TRTEngineSingleton::getInstance();
-    auto start = std::chrono::high_resolution_clock::now();
-    std::vector<float> out = trt->infer(frame);
-    auto end = std::chrono::high_resolution_clock::now();
-    double engineTime = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    std::cout << "head pose time:" << std::endl;
-    std::cout << engineTime << std::endl;
-    //std::string timeText = "time: " + std::to_string(int(engineTime))+"ms";
-    //cv::putText(frame, timeText, cv::Point(20, 20), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
-    //double fps = 1000/engineTime;
-    //std::string fpsText = "FPS: " + std::to_string(int(fps));
-    //cv::putText(frame, fpsText, cv::Point(20, 40), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
-    //int textPositionY = 55;  // Initial Y position for the first text
-
-    //for (float x : out) {
-	    //std::string text = std::to_string(x);  // Convert the float to string
-
-	    // Put the text on the image
-	    //cv::putText(frame, text, cv::Point(20, textPositionY), 
-		        //cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(255, 255, 255), 1);
-
-	    //textPositionY += 15;  // Move down for the next text
-	    //if (textPositionY > frame.rows - 15) {  // Check if the position is out of image bounds
-		//break;  // Reset position or break if you don't want to overwrite
-	    //}
-    //}
-
-
-    for (float x : out){
-	printf("%f \n",x);
+    // Measure headpose engine inference time
+    auto startHeadPose = std::chrono::high_resolution_clock::now();
+    auto headPoseResult = trt->inferHeadPose(croppedFace);
+    auto endHeadPose = std::chrono::high_resolution_clock::now();
+    double headPoseTime = std::chrono::duration_cast<std::chrono::milliseconds>(endHeadPose - startHeadPose).count();
+	if(headPoseTime>30){
+		headPoseTimes.push_back(headPoseTime);
+		maxHeadPoseTime = std::max(maxHeadPoseTime, headPoseTime);
+		minHeadPoseTime = std::min(minHeadPoseTime, headPoseTime);
+		totalHeadPoseTime += headPoseTime;
+		headPoseCount++;
 	}
-
-    //for (const auto& row : out) {
-        // Loop through each element in the sub-vector
-        //for (const auto& elem : row) {
-        //    std::cout << elem << " ";
-       // }
-      //  std::cout << std::endl;  // New line for each row
-    //}
-
-
-
-	
-   //outputQueue.push(out);
-
+    // Measure eyegaze engine inference time
+    auto startEyeGaze = std::chrono::high_resolution_clock::now();
+    auto eyeGazeResult = trt->inferEyeGaze(croppedFace);
+    auto endEyeGaze = std::chrono::high_resolution_clock::now();
+    double eyeGazeTime = std::chrono::duration_cast<std::chrono::milliseconds>(endEyeGaze - startEyeGaze).count();
+	if (eyeGazeTime>30){
+		eyeGazeTimes.push_back(eyeGazeTime);
+		maxEyeGazeTime = std::max(maxEyeGazeTime, eyeGazeTime);
+		minEyeGazeTime = std::min(minEyeGazeTime, eyeGazeTime);
+		totalEyeGazeTime += eyeGazeTime;
+		eyeGazeCount++;
+	}
+    std::vector<std::vector<float>> out{headPoseResult, eyeGazeResult};
+    return out;
 }
 
+
+
+
+cv::Rect HeadPoseComponent::detectFaceRectangle(const cv::Mat& frame) {
+    cv::Rect faceRect;
+    if (!faceRectQueue.tryPop(faceRect)) {
+        std::cerr << "No face rectangle found in the queue." << std::endl;
+        return cv::Rect(); // Return an empty rectangle
+    }
+    return faceRect;
+}
 
 
 
@@ -144,6 +143,8 @@ void HeadPoseComponent::updatePerformanceMetrics(double detectionTime) {
     }
 }
 
+
+
 void HeadPoseComponent::displayPerformanceMetrics(cv::Mat& frame) {
     std::string fpsText = "FPS: " + std::to_string(int(fps));
     std::string avgTimeText = "Avg Time: " + std::to_string(totalDetectionTime / totalFramesProcessed) + " ms";
@@ -153,5 +154,93 @@ void HeadPoseComponent::displayPerformanceMetrics(cv::Mat& frame) {
     //std::cout << fpsText << std::endl;
     //std::cout << avgTimeText << std::endl;
 }
+
+
+
+
+
+// Update the engine for head pose detection
+void HeadPoseComponent::updateHeadPoseEngine(const std::string& headPoseEnginePath) {
+    TRTEngineSingleton* trt = TRTEngineSingleton::getInstance();
+    trt->setEngine1(headPoseEnginePath);
+    std::cout << "Head pose engine updated successfully." << std::endl;
+    std::string command = "Clear Queue";
+    commandsQueue.push(command);
+}
+
+// Update the engine for eye gaze detection
+void HeadPoseComponent::updateEyeGazeEngine(const std::string& eyeGazeEnginePath) {
+    TRTEngineSingleton* trt = TRTEngineSingleton::getInstance();
+    trt->setEngine2(eyeGazeEnginePath);
+    std::cout << "Eye gaze engine updated successfully." << std::endl;
+    std::string command = "Clear Queue";
+    commandsQueue.push(command);
+}
+
+
+void HeadPoseComponent::logPerformanceMetrics() {
+
+
+    // Ensure the directory exists
+    fs::path dir("benchmarklogs");
+    if (!fs::exists(dir)) {
+        fs::create_directory(dir);
+    }
+
+    // Get current time and format the filename
+    pt::ptime now = pt::second_clock::local_time();
+    std::ostringstream filename;
+    filename << dir.string() << "/benchmark_log_"
+             << gr::to_iso_extended_string(now.date()) << "_"  // Correctly use date to string conversion
+             << std::setw(2) << std::setfill('0') << now.time_of_day().hours() << "-"
+             << std::setw(2) << std::setfill('0') << now.time_of_day().minutes()
+             << ".txt";
+
+    // Open the log file in append mode
+    std::ofstream logFile(filename.str(), std::ios::app);
+
+    double averageHeadPoseTime = headPoseCount > 0 ? totalHeadPoseTime / headPoseCount : 0;
+    double averageEyeGazeTime = eyeGazeCount > 0 ? totalEyeGazeTime / eyeGazeCount : 0;
+	if (minHeadPoseTime == std::numeric_limits<double>::max()){minHeadPoseTime=0;}
+	if (minEyeGazeTime == std::numeric_limits<double>::max()){minEyeGazeTime=0;}
+    logFile << "<<------------------------------------------------------------------->>\n";
+    logFile << "Head Pose Engine Metrics:\n";
+    logFile << "Max Time: " << maxHeadPoseTime << " ms\n";
+    logFile << "Min Time: " << minHeadPoseTime << " ms\n";
+    logFile << "Average Time: " << averageHeadPoseTime << " ms\n\n";
+
+    logFile << "Eye Gaze Engine Metrics:\n";
+    logFile << "Max Time: " << maxEyeGazeTime << " ms\n";
+    logFile << "Min Time: " << minEyeGazeTime << " ms\n";
+    logFile << "Average Time: " << averageEyeGazeTime << " ms\n\n";
+
+    TRTEngineSingleton* engine = TRTEngineSingleton::getInstance();
+    logFile << "Peak GPU Memory Usage for Head Pose: "
+            << static_cast<double>(engine->getPeakHeadPoseGpuMemoryUsage()) / (1024 * 1024) << " MB\n";
+    logFile << "Peak GPU Memory Usage for Eye Gaze: "
+            << static_cast<double>(engine->getPeakEyeGazeGpuMemoryUsage()) / (1024 * 1024) << " MB\n";
+
+    logFile << "Average CPU Memory Usage for Head Pose: "
+            << static_cast<double>(engine->gettotalCpuMemoryUsageHeadPose()) / engine->getheadPoseInferenceCount() / (1024 * 1024) << " MB\n";
+    logFile << "Average CPU Memory Usage for Eye Gaze: "
+            << static_cast<double>(engine->gettotalCpuMemoryUsageEyeGaze()) / engine->geteyeGazeInferenceCount() / (1024 * 1024) << " MB\n";
+
+    logFile << "Average CPU Usage for Head Pose: "
+            << static_cast<double>(engine->getheadPoseCpuUsage()) / engine->getheadPoseInferenceCount() << " %\n";
+
+    logFile << "Average CPU Usage for Eye Gaze: "
+            << static_cast<double>(engine->geteyeGazeCpuUsage()) / engine->geteyeGazeInferenceCount() << " %\n";
+    logFile << "<<------------------------------------------------------------------->>\n";
+
+
+	resetPerformanceMetrics();
+
+    engine->resetPeakGpuMemoryUsage();
+
+    logFile.close();
+}
+
+
+
 
 

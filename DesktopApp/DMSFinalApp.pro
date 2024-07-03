@@ -12,24 +12,30 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    configswidget.cpp \
     connectionwidget.cpp \
     datahandler.cpp \
     drivermonitoringwidget.cpp \
     main.cpp \
     mainwindow.cpp \
+    readingswidget.cpp \
     systemcontrol.cpp
 
 HEADERS += \
+    configswidget.h \
     connectionwidget.h \
     datahandler.h \
     drivermonitoringwidget.h \
     mainwindow.h \
+    readingswidget.h \
     systemcontrol.h
 
 FORMS += \
+    configswidget.ui \
     connectionwidget.ui \
     drivermonitoringwidget.ui \
     mainwindow.ui \
+    readingswidget.ui \
     systemcontrol.ui
 
 # Default rules for deployment.
