@@ -76,7 +76,7 @@ In essence, the script systematically processes image and MATLAB data files, ext
 **Usage:**
 
 ```python
-python data21file.py
+python process_300W-lp.py
 ```
 
 ## Cloud Storage
@@ -91,4 +91,4 @@ The processed datasets are used in the `datasets` folder on the test bench. Make
 
 ## Important Remark 
 process_BIWI output will produce an npz file that could be used standalone has the images with the labels
-data21file output will produce an pkl file that has to be used in the root of 300W-lp dataset
+process_300W-lp output will produce an pkl file that has to be used in the root of 300W-lp dataset
