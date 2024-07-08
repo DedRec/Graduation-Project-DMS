@@ -65,7 +65,7 @@ def main():
             model.load_state_dict(saved_state_dict['model_state_dict'])
 
         print('Loading data.')
-        pkla=pd.read_pickle("./Datasets/300W_LP/300W_LP/file.pkl")
+        pkla=pd.read_pickle("./Datasets/300W_LP/file.pkl")
         pkla = pkla.sample(frac=1, random_state=42)
         # train=pkla[:int(0.9*len(df_shuffled))]
         # test=pkla[int(0.9*len(df_shuffled)):]
@@ -78,13 +78,13 @@ def main():
         transformations = transforms.Compose([transforms.RandomResizedCrop(size=224,scale=(0.8,1)),
                                             transforms.ToTensor(),
                                             normalize])
-        train_pose_dataset =pose_eff_dataset('./Datasets/300W_LP/300W_LP',
+        train_pose_dataset =pose_eff_dataset('./Datasets/300W_LP',
                                         pkla,
                                         transformations)
         # test_pose_dataset =pose_eff_dataset('./Datasets/300W_LP/300W_LP',
         #                                 test,
         #                                 transformations)
-        test_pose_dataset =BIWI("E:/HeadPose/Training/Datasets/BIWI_done.npz",
+        test_pose_dataset =BIWI("./Datasets/BIWI/BIWI_done.npz",
                                 transform=transformations,
                                 train_mode=False) 
         train_effloader = torch.utils.data.DataLoader(

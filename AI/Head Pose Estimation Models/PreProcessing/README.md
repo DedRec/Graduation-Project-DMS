@@ -84,11 +84,12 @@ python process_300W-lp.py
 Both datasets produced from these scripts are saved on the cloud. Ensure you have the necessary credentials and access rights to store and retrieve data from your cloud storage solution.
 - <a href="https://drive.google.com/file/d/1_DwVRbrPiK1y9kbBtpIJOtcD8aSu8WAX/view?usp=drive_link">file.pkl</a>
 - <a href="https://drive.google.com/file/d/1vhXP7-BogBMrXjug2a4snju1_37A5D5c/view?usp=sharing">BIWI_done.npz</a>
-
+- <a href = "https://drive.google.com/file/d/0B7OEHD3T4eCkVGs0TkhUWFN6N1k/view?resourcekey=0-WT5tO4TOCbNZY6r6z6WmOA"> Original 300W_lp</a>
+- <a href = "https://www.kaggle.com/datasets/kmader/biwi-kinect-head-pose-database/data">Original BIWI</a>
 ## Test Bench Process
 
 The processed datasets are used in the `datasets` folder on the test bench. Make sure to update the paths in your test bench scripts to point to the correct locations of the processed datasets.
 
 ## Important Remark 
-process_BIWI output will produce an npz file that could be used standalone has the images with the labels
-process_300W-lp output will produce an pkl file that has to be used in the root of 300W-lp dataset
+- process_BIWI output will produce an npz file that could be used standalone has the images with the labels
+- process_300W-lp output will produce an pkl file that has to be used in the root of 300W-lp dataset

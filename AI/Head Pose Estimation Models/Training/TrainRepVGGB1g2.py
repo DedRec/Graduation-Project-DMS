@@ -81,11 +81,11 @@ def main():
                                         transforms.ToTensor(),
                                         normalize])
     # here its required to specify root directory for 300W_lP dataset
-    train_pose_dataset =pose_eff_dataset('./Datasets/300W_LP/',
+    train_pose_dataset =pose_eff_dataset('./Datasets/300W_LP',
                                     pkla,
                                     transformations)
     # then the validation dataset is created
-    val_pose_dataset =BIWI("./Datasets/BIWI_done.npz",
+    val_pose_dataset =BIWI("./Datasets/BIWI/BIWI_done.npz",
                             transform=transformations,
                             train_mode=False)
     # specifying data loaders for each dataset 
