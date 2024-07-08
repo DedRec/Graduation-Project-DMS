@@ -1,7 +1,7 @@
 
 # Datapreprocessing
 
-This repository contains scripts for preprocessing two different datasets: the BIWI dataset and the 300W-LP dataset. The processed datasets are saved on the cloud and used in the `datasets` folder during the test bench process.
+This repository contains scripts for preprocessing two different datasets: the BIWI dataset and the 300W-LP dataset. The processed datasets are saved on the cloud and used in the `Datasets` folder during the test bench process.
 
 ## Files
 
@@ -88,7 +88,7 @@ Both datasets produced from these scripts are saved on the cloud. Ensure you hav
 - <a href = "https://www.kaggle.com/datasets/kmader/biwi-kinect-head-pose-database/data">Original BIWI</a>
 ## Test Bench Process
 
-The processed datasets are used in the `datasets` folder on the test bench. Make sure to update the paths in your test bench scripts to point to the correct locations of the processed datasets.
+The processed datasets are used in the `Datasets` folder on the test bench. Make sure to update the paths in your test bench scripts to point to the correct locations of the processed datasets.
 
 ## Important Remark 
 - process_BIWI output will produce an npz file that could be used standalone has the images with the labels
