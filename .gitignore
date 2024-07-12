@@ -1,12 +1,15 @@
 # ignore model files
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/models/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/models/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/models/
 
 # ignore build directory
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/build/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/build/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/build/
 
 # ignore data directory 
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/data/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/data/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/build/
 
