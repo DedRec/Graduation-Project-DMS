@@ -1,0 +1,8 @@
+# ignore model files
+Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/models/
+
+# ignore build directory
+Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/build/
+
+# ignore data directory 
+Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/data/
