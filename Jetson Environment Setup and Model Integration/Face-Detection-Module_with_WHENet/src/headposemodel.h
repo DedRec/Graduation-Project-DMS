@@ -11,7 +11,6 @@ class HeadPoseModel {
 public:
     HeadPoseModel(const std::string &modelPath);
     std::vector<float> predict(const cv::Mat &image);
-    std::vector<float> computeEulerAnglesFromRotationMatrices(const std::vector<float> &rotationMatrices);
 
 private:
     cv::dnn::Net net;
@@ -20,6 +19,9 @@ private:
     cv::Scalar std = cv::Scalar(0.229, 0.224, 0.225);
     
     cv::Mat preprocess(const cv::Mat &image);
+    float mapPositionToDegrees(int maxPos, int vectorIndex);
+    float findMaxValue(const cv::Mat &mat);
+    int findMaxIndex(const cv::Mat &mat);
 };
 
 #endif // HEADPOSEMODEL_H
