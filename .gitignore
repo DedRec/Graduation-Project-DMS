@@ -1,20 +1,26 @@
 # ignore model files
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/models/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/models/
-Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/models/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_a0/models/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_WHENet/models/
 Jetson Environment Setup and Model Integration/System/models/
+Jetson Environment Setup and Model Integration/System_with_WHENet/models/
 
 
 # ignore build directory
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/build/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/build/
-Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/build/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_a0/build/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_WHENet/build/
 Jetson Environment Setup and Model Integration/System/build/
+Jetson Environment Setup and Model Integration/System_with_WHENet/build/
 
 # ignore data directory 
 Jetson Environment Setup and Model Integration/Face-Detection-Module-For-jetson/data/
 Jetson Environment Setup and Model Integration/Face-Detection-Module_with_eye_gaze/data/
-Jetson Environment Setup and Model Integration/Face-Detection-Module_with_head_pose/data/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_a0/data/
+Jetson Environment Setup and Model Integration/Face-Detection-Module_with_WHENet/data/
 Jetson Environment Setup and Model Integration/System/data/
+Jetson Environment Setup and Model Integration/System_with_WHENet/data/
 
 
