@@ -1,6 +1,6 @@
 # Model Storage
 
-Copy and paste inside folder before running build_and_run.sh bash script.
+Copy and paste this directory inside the folder before running build_and_run.sh bash script.
 
 ## ./onnx
 
