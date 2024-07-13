@@ -4,9 +4,9 @@ This repository contains implementations of eye gaze detection models using vari
 
 To run the code, you will need to have the following libraries installed:
 
-`numpy`
-`matplotlib`
-`pillow`
-`torch`
-`torchvision`
-`opencv2`
+- numpy
+- matplotlib
+- pillow
+- torch
+- torchvision
+- opencv2
