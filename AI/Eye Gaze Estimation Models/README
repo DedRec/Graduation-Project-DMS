@@ -1,7 +1,9 @@
-This repository contains implementations of eye gaze detection models using various architectures: MobileNetV3 Small, ResNet50, MobileNetV2, and SqueezeNet. 
-These models are trained to estimate gaze direction from eye images.
+# Eye Gaze Detection Models
 
-Needed Libraries
+This repository contains implementations of eye gaze detection models using various architectures: MobileNetV3 Small, ResNet50, MobileNetV2, and SqueezeNet. These models are trained to estimate gaze direction from eye images.
+
+## Needed Libraries
+
 - numpy
 - matplotlib
 - pillow
