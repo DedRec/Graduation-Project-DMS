@@ -377,16 +377,16 @@ class Ui_EyeGazeTesting(object):
             return
 
         # YOLO model 
-        model_yolo = YOLO("yolov8n-face.pt")
+        model_yolo = YOLO("weights/yolov8n-face.pt")
 
         model_mnv3 = MobileNetV3Small()
         model_mnv2 = MobileNetV2()
         model_sqz = SqueezeNet()
         model_resnet = ResNet50()
 
-        model_mnv3.load_weights("MNV3_small_weights_cleaned_100.pth")
+        model_mnv3.load_weights("weights/MNV3_small_weights_cleaned_100.pth")
         #model_mnv2.load_weights("MNV3_small_weights_cleaned_100.pth")
-        model_sqz.load_weights("Squeezenet.pt")
+        model_sqz.load_weights("weights/Squeezenet.pt")
         #model_resnet.load_weights("MNV3_small_weights_cleaned_100.pth")
 
         chosen_model = None
