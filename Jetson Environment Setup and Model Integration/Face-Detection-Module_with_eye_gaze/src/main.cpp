@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     std::string model_path = "../models/onnx/version-slim-320_simplified.onnx";
-    std::string eye_model_path = "../models/eye_gaze/MNV3_small.onnx";
+    std::string eye_model_path = "../models/eye_gaze/squeezeNet.onnx";
     UltraFace ultraface(model_path, 320, 240, 1, 0.7); // Config model input
     EyeGazeModel model(eye_model_path);
     
@@ -24,6 +24,12 @@ int main(int argc, char **argv) {
     cv::Mat frame;
     std::vector<std::string> classes = {"Eyes Closed", "Forward", "Left Mirror", "Radio", "Rearview", "Right Mirror", "Shoulder", "Speedometer"};
     
+
+// Variables to track FPS
+    double minFPS = std::numeric_limits<double>::max();
+    double maxFPS = 0.0;
+    std::vector<double> fpsValues;  
+
     while (true) {
         cap >> frame;
         if (frame.empty()) {
@@ -57,6 +63,29 @@ int main(int argc, char **argv) {
 
             // Perform prediction on the cropped face region
             std::vector<float> predictions = model.predict(faceROI);
+	
+	auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = end - start;
+
+// Calculate FPS
+        double fps = 1.0 / elapsed.count();
+	std::cout << "FPS: " << fps << std::endl;
+		fpsValues.push_back(fps);
+	// Update min and max FPS
+		if (fps < minFPS) minFPS = fps;
+		if (fps > maxFPS) maxFPS = fps;
+
+	// Calculate average FPS
+	    double sumFPS = 0.0;
+	    for (double fps : fpsValues) {
+		sumFPS += fps;
+	    }
+	    double avgFPS = sumFPS / fpsValues.size();
+
+	// Output FPS statistics
+	    std::cout << "Min FPS: " << minFPS << std::endl;
+	    std::cout << "Max FPS: " << maxFPS << std::endl;
+	    std::cout << "Avg FPS: " << avgFPS << std::endl;
             
             // Find the class with the maximum prediction
             auto maxIt = std::max_element(predictions.begin(), predictions.end());
@@ -71,14 +100,16 @@ int main(int argc, char **argv) {
             int thickness = 2;
             cv::Point textOrg(crop_region.x, crop_region.y - 10);
             cv::putText(frame, text, textOrg, fontFace, fontScale, cv::Scalar(0, 255, 0), thickness);
+	
 
+	
         } catch (const cv::Exception& e) {
             std::cerr << "OpenCV error: " << e.what() << std::endl;
         }
 
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapsed = end - start;
-        std::cout << "FPS: " << 1.0 / elapsed.count() << std::endl;
+        //auto end = std::chrono::high_resolution_clock::now();
+        //std::chrono::duration<double> elapsed = end - start;
+        //std::cout << "FPS: " << 1.0 / elapsed.count() << std::endl;
 
         cv::imshow("UltraFace", frame);
         if (cv::waitKey(1) == 27) { // Press 'Esc' to exit
