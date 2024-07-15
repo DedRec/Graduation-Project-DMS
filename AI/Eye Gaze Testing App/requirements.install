@@ -1,0 +1,16 @@
+# .install file for required libraries
+
+# Install PyTorch
+pip install torch torchvision torchaudio
+
+# Install YOLO from ultralytics
+pip install ultralytics
+
+# Install OpenCV
+pip install opencv-python-headless
+
+# Install PyQt5
+pip install PyQt5
+
+# Install Pillow
+pip install Pillow
