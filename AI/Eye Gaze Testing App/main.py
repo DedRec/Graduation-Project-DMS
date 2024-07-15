@@ -3,7 +3,7 @@ import sys
 import cv2
 import time
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtGui import QImage, QPixmap, QColor
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PIL import Image
 from torchvision import transforms
@@ -174,6 +174,14 @@ class Ui_EyeGazeTesting(object):
         self.webCamLabel.setObjectName("webCamLabel")
         self.horizontalLayout.addWidget(self.webCamLabel)
 
+        # Get the size of the horizontalLayoutWidget
+        layout_size = self.horizontalLayoutWidget.size()
+
+        # Create a black QPixmap with the same size as the horizontalLayoutWidget
+        black_pixmap = QPixmap(layout_size)
+        black_pixmap.fill(QColor('black'))
+        # Set the black QPixmap to the label
+        self.webCamLabel.setPixmap(black_pixmap)
 
         self.verticalLayoutWidget = QtWidgets.QWidget(self.centralwidget)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(739, 9, 251, 541))
@@ -408,7 +416,7 @@ class Ui_EyeGazeTesting(object):
         start_time = time.time()
         frame_count = 0
 
-        while self.cap.isOpened():
+        while self.cap is not None: # while self.cap.isOpened():
             success, frame = self.cap.read()
             if not success:
                 break
@@ -421,11 +429,9 @@ class Ui_EyeGazeTesting(object):
                     # Box coordinates
                     x1, y1, x2, y2 = map(int, box.xyxy[0])
 
-                    # 55% of the height
                     height = y2 - y1
-                    cropped_height = int(0.55 * height)
+                    cropped_height = int(self.spinBox.value() * 0.01 * height) # best ranges from 50 - 55
 
-                    # Crop 55% of the height
                     y1_cropped = y1
                     y2_cropped = y1 + cropped_height
 
@@ -468,8 +474,8 @@ class Ui_EyeGazeTesting(object):
             if cv2.waitKey(20) & 0xFF == ord('q'):
                 Break
 
-        self.cap.release()
-        cv2.destroyAllWindows()
+        # self.cap.release()
+        # cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     import sys
