@@ -93,11 +93,11 @@ class SqueezeNet(nn.Module):
 
 
 # model paths
-model_path_MNV3 = "MNV3_small_weights_cleaned_100.pth"
+model_path_MNV3 = "weights/MNV3_small_weights_cleaned_100.pth"
 #model_path = "eyegaze.pt"
 #model_path_MNV2 = "MNV2_weights.h5"
-model_path_SqueezeNet = "Squeezenet.pt"
-model_path_yolov8 = "yolov8n-face.pt"
+model_path_SqueezeNet = "weights/Squeezenet.pt"
+model_path_yolov8 = "weights/yolov8n-face.pt"
 
 # instances of each model
 # model_MNV3 = MobileNetV3Small()
