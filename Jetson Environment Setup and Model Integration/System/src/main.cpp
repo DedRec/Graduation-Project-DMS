@@ -110,10 +110,10 @@ std::cout << "FPS: " << fps << std::endl;
 	    std::cout << std::endl;
 
 	// Compute Euler angles
-            std::vector<float> eulerAngles = headModel.computeEulerAnglesFromRotationMatrices(anglePredictions);
+            //std::vector<float> eulerAngles = headModel.computeEulerAnglesFromRotationMatrices(anglePredictions);
 
             // Output the Euler angles
-            std::cout << "Yaw: " << eulerAngles[0] << ", Pitch: " << eulerAngles[1] << ", Roll: " << eulerAngles[2] << std::endl;
+            //std::cout << "Yaw: " << eulerAngles[0] << ", Pitch: " << eulerAngles[1] << ", Roll: " << eulerAngles[2] << std::endl;
 	    
 	    //Draw BBox on Face
             //cv::rectangle(frame, bestFaceRect, cv::Scalar(255, 0, 0), 2);
@@ -131,6 +131,18 @@ std::cout << "FPS: " << fps << std::endl;
             int thickness = 2;
             cv::Point textOrg(crop_region.x, crop_region.y - 10);
             cv::putText(frame, text, textOrg, fontFace, fontScale, cv::Scalar(0, 255, 0), thickness);
+// Format FPS and max FPS to 2 decimal points
+            std::ostringstream fpsStream, maxFpsStream;
+            fpsStream << std::fixed << std::setprecision(2) << fps;
+            maxFpsStream << std::fixed << std::setprecision(2) << maxFPS;
+            std::string fpsText = "FPS: " + fpsStream.str();
+            std::string maxFpsText = "Max FPS: " + maxFpsStream.str();
+            
+            // Display the FPS and max FPS on the frame with smaller font size
+            double smallFontScale = 0.5;
+            int smallFontThickness = 1;
+            cv::putText(frame, fpsText, cv::Point(10, 30), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, maxFpsText, cv::Point(10, 50), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
 
         } catch (const cv::Exception& e) {
             std::cerr << "OpenCV error: " << e.what() << std::endl;

@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     
     // Open the camera
     // Read from video file
-    std::string videofile = "../data/Test.mp4";
+    std::string videofile = "../data/Test1.mp4";
     cv::VideoCapture cap(videofile);
     //cv::VideoCapture cap(0);
     if (!cap.isOpened()) {
@@ -126,6 +126,31 @@ std::cout << "FPS: " << fps << std::endl;
             int thickness = 2;
             cv::Point textOrg(crop_region.x, crop_region.y - 10);
             cv::putText(frame, text, textOrg, fontFace, fontScale, cv::Scalar(0, 255, 0), thickness);
+
+// Format FPS, avg FPS, and max FPS to 2 decimal points
+            std::ostringstream fpsStream, avgFpsStream, maxFpsStream, rollStream, pitchStream, yawStream;
+            fpsStream << std::fixed << std::setprecision(2) << fps;
+            avgFpsStream << std::fixed << std::setprecision(2) << avgFPS;
+            maxFpsStream << std::fixed << std::setprecision(2) << maxFPS;
+            rollStream << std::fixed << std::setprecision(2) << anglePredictions[0];
+            pitchStream << std::fixed << std::setprecision(2) << anglePredictions[1];
+            yawStream << std::fixed << std::setprecision(2) << anglePredictions[2];
+            std::string fpsText = "FPS: " + fpsStream.str();
+            std::string avgFpsText = "Avg FPS: " + avgFpsStream.str();
+            std::string maxFpsText = "Max FPS: " + maxFpsStream.str();
+            std::string rollText = "Roll: " + rollStream.str();
+            std::string pitchText = "Pitch: " + pitchStream.str();
+            std::string yawText = "Yaw: " + yawStream.str();
+            
+            // Display the FPS, avg FPS, max FPS, and angles on the frame with smaller font size
+            double smallFontScale = 0.5;
+            int smallFontThickness = 1;
+            cv::putText(frame, fpsText, cv::Point(10, 30), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, avgFpsText, cv::Point(10, 50), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, maxFpsText, cv::Point(10, 70), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, rollText, cv::Point(10, 90), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, pitchText, cv::Point(10, 110), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
+            cv::putText(frame, yawText, cv::Point(10, 130), fontFace, smallFontScale, cv::Scalar(0, 255, 0), smallFontThickness);
 
         } catch (const cv::Exception& e) {
             std::cerr << "OpenCV error: " << e.what() << std::endl;

@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     UltraFace ultraface(model_path, 320, 240, 1, 0.7); // Config model input
 
     // Read from video file
-    std::string videofile = "../data/Test.mp4";
+    std::string videofile = "../data/Test1.mp4";
     cv::VideoCapture cap(videofile);
     //cv::VideoCapture cap(0);
     if (!cap.isOpened()) {
